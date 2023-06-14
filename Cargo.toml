@@ -17,4 +17,4 @@ categories = ["cryptography", "data-structures", "encoding"]
 cargo-release = "0.24.10"
 
 [package.metadata.release]
-disable-publish = true
+publish = false
