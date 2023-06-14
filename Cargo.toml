@@ -12,3 +12,9 @@ categories = ["cryptography", "data-structures", "encoding"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+
+[dev-dependencies]
+cargo-release = "0.24.10"
+
+[package.metadata.release]
+disable-publish = true
