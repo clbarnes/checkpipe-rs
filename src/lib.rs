@@ -93,7 +93,7 @@ impl<T> Checker<DefaultHasher, T> {
 
     /// Replace the internal hasher with an empty [DefaultHasher], returning the old one.
     pub fn reset_hasher(&mut self) -> DefaultHasher {
-        std::mem::replace(&mut self.checker, DefaultHasher::default())
+        std::mem::take(&mut self.checker)
     }
 }
 

@@ -1,7 +1,13 @@
 [package]
 name = "checkpipe"
 version = "0.1.0"
+authors = ["Chris Barnes <chrislloydbarnes@gmail.com>"]
 edition = "2021"
+description = "Perform a computation over some bytes passing through some struct"
+repository = "https://github.com/clbarnes/checkpipe-rs"
+license = "MIT"
+keywords = ["checksum", "read", "write", "digest", "hash"]
+categories = ["cryptography", "data-structures", "encoding"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
