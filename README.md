@@ -49,7 +49,7 @@ pub fn main() -> std::io::Result<()> {
 
 Implement the `Check` trait on a struct, which provides methods for taking a chunk of bytes,
 and eventually returning the result of its computation.
-Then wrap that struct and some struct through which bytes pass in a `Checker`.
+Then wrap that struct, and some struct through which bytes pass, in a `Checker`.
 
 `Check` is already implemented for all types implementing `Hasher`,
 and there are some convenience methods in place if you want to use rust's default hasher.

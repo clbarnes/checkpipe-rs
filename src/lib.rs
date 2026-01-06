@@ -100,7 +100,10 @@ impl<T> Checker<DefaultHasher, T> {
 
 impl<C: Default + Check, T> Checker<C, T> {
     pub fn new_default(inner: T) -> Self {
-        Self { checker: Default::default(), inner }
+        Self {
+            checker: Default::default(),
+            inner,
+        }
     }
 }
 
