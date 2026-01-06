@@ -5,12 +5,13 @@ use std::io::{Read, Write};
 
 /// Trait representing a computation performed on some bytes.
 ///
-/// The computation should be independent of how the bytes are chunked when passed in.
+/// The computation must be independent of how the bytes are chunked when passed in.
 pub trait Check {
     /// The result type of the computation.
     type Output;
 
     /// Update based on a new chunk of bytes.
+    /// All bytes must be processed.
     fn update(&mut self, buf: &[u8]);
 
     /// Return the output of the computation (so far).
@@ -29,7 +30,7 @@ impl<H: Hasher> Check for H {
     }
 }
 
-/// Struct wrapping over a [Check] type and some other type which handles bytes.
+/// Struct wrapping over a [Check] type and some other type which handles bytes (usually a reader/writer).
 ///
 /// Implements [Read] and/or [Write] if `T` does.
 /// It is possible for the checker to get out of sync with the actual bytes
@@ -46,16 +47,16 @@ impl<C: Check, T> Checker<C, T> {
     }
 
     /// Insert a new [Check] struct, returning the old one.
-    pub fn replace_checker(&mut self, digest: C) -> C {
-        std::mem::replace(&mut self.checker, digest)
+    pub fn replace_checker(&mut self, new: C) -> C {
+        std::mem::replace(&mut self.checker, new)
     }
 
-    /// Insert a new inner value, returning the old one.
+    /// Insert a new inner value (reader/writer), returning the old one.
     pub fn replace_inner(&mut self, inner: T) -> T {
         std::mem::replace(&mut self.inner, inner)
     }
 
-    /// Destroy the struct and create a new one, re-using the existing inner value.
+    /// Destroy the struct and create a new one, re-using the existing inner value (reader/writer).
     ///
     /// This allows the [Check] struct to be replaced with one of a different type.
     pub fn rebuild_with_checker<C2: Check>(self, hasher: C2) -> (Checker<C2, T>, C) {
@@ -97,6 +98,12 @@ impl<T> Checker<DefaultHasher, T> {
     }
 }
 
+impl<C: Default + Check, T> Checker<C, T> {
+    pub fn new_default(inner: T) -> Self {
+        Self { checker: Default::default(), inner }
+    }
+}
+
 impl<C: Check, R: Read> Read for Checker<C, R> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         let out = self.inner.read(buf)?;
@@ -116,3 +123,23 @@ impl<C: Check, W: Write> Write for Checker<C, W> {
         self.inner.flush()
     }
 }
+
+/// Type implementing [Check] used by [Counter] for counting bytes as they pass through.
+#[derive(Debug, Default)]
+pub struct InnerCounter(usize);
+
+impl Check for InnerCounter {
+    type Output = usize;
+
+    fn update(&mut self, buf: &[u8]) {
+        self.0 += buf.len();
+    }
+
+    fn output(&self) -> Self::Output {
+        self.0
+    }
+}
+
+/// Type which counts the number of bytes passed through.
+/// Useful for wrapping readers/writers before (or after) they are wrapped in compressors.
+pub type Counter<T> = Checker<InnerCounter, T>;

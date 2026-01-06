@@ -53,4 +53,5 @@ Then wrap that struct and some struct through which bytes pass in a `Checker`.
 
 `Check` is already implemented for all types implementing `Hasher`,
 and there are some convenience methods in place if you want to use rust's default hasher.
-If the wrapped type in `Checker` is `Read` or `Write`, so too will the `Checker`.
+See also the `Counter`, a `Checker` which counts the bytes which pass through it.
+If the wrapped type in `Checker` is `Read` or `Write`, so too will be the `Checker`.
